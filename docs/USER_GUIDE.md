@@ -1,104 +1,161 @@
 # User Guide
 
-## First launch
-
-On first launch, NoteBuddy will show the **onboarding wizard**:
-
-1. **Welcome** — overview of features
-2. **Choose folder** — pick a folder where your notes will live. A `WELCOME.md` guide is created here automatically.
-3. **Tour** — an interactive walkthrough highlights each part of the UI
-
-Your folder is remembered and reopened on every launch.
+> New here? See the [README](../README.md) for setup. Developers see the [Developer Guide](DEVELOPER.md). For custom themes see the [Theming Guide](THEMING.md).
 
 ---
 
-## The interface
+## Contents
+
+1. [First launch](#1-first-launch)
+2. [Interface overview](#2-interface-overview)
+3. [Files & tabs](#3-files--tabs)
+4. [Writing markdown](#4-writing-markdown)
+5. [Wikilinks](#5-wikilinks)
+6. [Code blocks](#6-code-blocks)
+7. [Mermaid diagrams](#7-mermaid-diagrams)
+8. [Math (KaTeX)](#8-math-katex)
+9. [Frontmatter](#9-frontmatter)
+10. [Emoji autocomplete](#10-emoji-autocomplete)
+11. [Filtering notes](#11-filtering-notes)
+12. [Bookmarks](#12-bookmarks)
+13. [Templates](#13-templates)
+14. [Command palette](#14-command-palette-k)
+15. [Find & replace](#15-find--replace-f)
+16. [Zen mode](#16-zen-mode-z)
+17. [Export](#17-export)
+18. [Settings](#18-settings)
+19. [Keyboard shortcuts](#19-keyboard-shortcuts)
+
+---
+
+## 1. First launch
+
+On first launch the **onboarding wizard** runs:
+
+1. **Welcome** — feature overview
+2. **Choose folder** — pick where notes live. `WELCOME.md` is created automatically.
+3. **Tour** — interactive walkthrough of every UI section
+
+Folder is remembered and reopened on every launch.
+
+To restart onboarding at any time: **Settings → About → Reset onboarding**.
+
+![Onboarding wizard showing the welcome step with feature highlights and a "Choose Folder" button](screenshots/onboarding.png)
+
+---
+
+## 2. Interface overview
 
 ```
-┌─────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────┐
 │  Toolbar  (traffic lights · actions · ⌘K · panels · ⚙) │
-├─────────────────────────────────────────────────────┤
-│  Tab bar  (open files · + new tab)                   │
-├──────────┬──────────────────────────────────────────┤
-│          │         Editor          │    Preview      │
-│ Sidebar  │  ─────────────────────  │  ─────────────  │
-│          │  CodeMirror editor      │  Rendered HTML  │
-│ Filter   │                         │  + diagrams     │
-│ Bookmarks│                         │  + math         │
-│ Tags     │                         │                 │
-│ Files    │                         │                 │
-├──────────┴──────────────────────────────────────────┤
-│  Status bar  (path · words · chars · reading time)  │
-└─────────────────────────────────────────────────────┘
+├────────────────────────────────────────────────────────┤
+│  Tab bar  (open files · + new tab)                      │
+├──────────┬─────────────────────────┬───────────────────┤
+│          │       Editor            │     Preview       │
+│ Sidebar  │  CodeMirror 6           │  Rendered HTML    │
+│          │  syntax highlighting    │  + diagrams       │
+│ Bookmarks│  autocomplete           │  + math           │
+│ Files    │  find & replace         │  + wikilinks      │
+│ Filter   │                         │                   │
+├──────────┴─────────────────────────┴───────────────────┤
+│  Status bar  (path · words · chars · reading time)      │
+└────────────────────────────────────────────────────────┘
 ```
+
+![Full app window in dark theme with a markdown note open, sidebar showing file tree, split editor/preview visible](screenshots/interface-overview.png)
+
+- **Sidebar** — file tree, bookmarks, tag/date filter. Drag the right edge to resize.
+- **Editor** — CodeMirror 6. Full markdown syntax highlighting + autocomplete.
+- **Preview** — live-rendered HTML. Draggable divider between editor and preview.
+- **Toolbar** — new file, open folder, command palette, panel toggles, settings.
+- **Status bar** — current path, word/char count, estimated reading time.
 
 ---
 
-## Working with files
+## 3. Files & tabs
 
 ### Opening files
+
 - Click any `.md` file in the sidebar
-- `⌘K` → type a filename to search and open
-- Toolbar → folder icon to open a file directly
+- `⌘K` → type filename to search and open
+- Toolbar folder icon → open file directly
 
-### Multiple files (tabs)
+### Tabs
+
 - Each file opens in its own tab
-- Click **+** or press the New File button to open a blank tab
+- **+** button or New File creates a blank tab
 - **Middle-click** a tab to close it
-- Unsaved tabs show a blue dot; closing prompts for confirmation
+- Blue dot = unsaved changes; closing prompts for confirmation
 
-### Saving
-- `⌘S` — save current file
-- `⌘K` → `> save as` — save with a new name
+![Tab bar showing three open files, one with a blue unsaved-changes dot, plus the new-tab button](screenshots/tabs.png)
 
-### File management (sidebar)
-- **Hover** any file or folder to reveal rename (✎) and delete (🗑) buttons
-- **Right-click** for a context menu with more options
-- **+ button** on the sidebar header creates a new file in the root folder
-- The **folder icon** opens a different folder
+### File management
+
+- **Hover** file/folder → reveals rename (✎) and delete (🗑) icons
+- **Right-click** → context menu with rename, delete, new file, from template
+- **+ button** on sidebar header creates file in root folder
+- **Folder icon** in toolbar opens a different root folder
 
 ---
 
-## Writing markdown
+## 4. Writing markdown
 
-NoteBuddy supports full GitHub Flavoured Markdown:
+Full GitHub Flavoured Markdown supported:
 
 ```markdown
-# Heading 1 — ## H2 — ### H3
+# Heading 1
+## Heading 2
+### Heading 3
 
 **bold**  *italic*  ~~strikethrough~~
 
 - Bullet list
 1. Numbered list
-- [ ] Task item (checkbox)
+- [ ] Task checkbox
 
 > Blockquote
 
-[Link text](https://example.com)
-![Image alt](./path/to/image.png)
+[Link](https://example.com)
+![Image](./path/to/image.png)
 
 | Column 1 | Column 2 |
 | --- | --- |
 | Cell | Cell |
 ```
 
+### Autocomplete
+
+`Ctrl+Space` triggers suggestions. Autocomplete sources:
+
+| Source | Examples |
+|---|---|
+| Markdown snippets | `\`\`\``, `---`, frontmatter block |
+| Language keywords | `function`, `async`, `const` (inside code fences) |
+| Local symbols | Headings + filenames from your folder |
+| Emoji shortcodes | `:smile:`, `:rocket:` |
+
+`Tab` accepts. `Esc` dismisses.
+
+![Editor showing autocomplete dropdown with emoji and markdown snippet suggestions](screenshots/autocomplete.png)
+
 ---
 
-## Wikilinks
+## 5. Wikilinks
 
-Link between notes using double brackets:
+Link notes with double brackets:
 
 ```markdown
-See also [[My Other Note]] for more details.
+See also [[My Other Note]] for more context.
 ```
 
-Clicking the link in the preview opens that note (looks for `My Other Note.md` in your folder).
+Clicking the link in preview opens `My Other Note.md` from your folder. If the file doesn't exist, the link is styled differently.
 
 ---
 
-## Code blocks
+## 6. Code blocks
 
-Fenced code blocks are syntax-highlighted in the preview and get **language-aware autocomplete** in the editor:
+Fenced blocks are syntax-highlighted in preview and get language-aware autocomplete in editor:
 
 ````markdown
 ```typescript
@@ -108,193 +165,224 @@ function greet(name: string) {
 ```
 ````
 
-Supported languages: TypeScript, JavaScript, Python, Rust, Go, Java, C++, SQL, Bash, CSS, HTML, YAML, and more.
+Supported: TypeScript, JavaScript, Python, Rust, Go, Java, C++, SQL, Bash, CSS, HTML, YAML, and more.
 
-Each code block has a **copy button** in the top-right corner of the preview.
+Each preview code block has a **copy button** (top-right corner).
+
+Theme is controlled by the code block theme setting — see [Theming Guide → Code block themes](THEMING.md#3-code-block-themes).
 
 ---
 
-## Mermaid diagrams
+## 7. Mermaid diagrams
 
 ````markdown
 ```mermaid
 graph TD
   A[Start] --> B{Decision}
-  B -->|Yes| C[Do it]
+  B -->|Yes| C[Done]
   B -->|No| D[Skip]
 ```
 ````
 
+![Preview pane rendering a Mermaid flowchart diagram with nodes and arrows](screenshots/mermaid-diagram.png)
+
+Full Mermaid syntax supported: flowcharts, sequence diagrams, Gantt charts, pie charts, ER diagrams.
+
 ---
 
-## Math (KaTeX)
+## 8. Math (KaTeX)
 
-Inline math: `$E = mc^2$`
+Inline: wrap in `$...$`
 
-Display math:
+```markdown
+The formula is $E = mc^2$.
 ```
+
+Display block: wrap in `$$...$$`
+
+```markdown
 $$
 \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
 $$
 ```
 
+![Preview pane showing a rendered display math block with a large integral formula](screenshots/math-katex.png)
+
 ---
 
-## Frontmatter
+## 9. Frontmatter
 
-Add YAML at the top of any note to get a metadata bar in the preview:
+Add YAML to the top of any note for a metadata bar in preview:
 
 ```yaml
 ---
-title: My Note Title
+title: My Note
 type: concept
-tags: [rust, programming, tutorial]
+tags: [rust, programming]
 created: 2026-01-01
 updated: 2026-04-11
 ---
 ```
 
-**Types** get color-coded badges: `source` (blue), `concept` (purple), `entity` (green), `topic` (amber).
+![Preview pane showing a frontmatter metadata bar with type badge, tag chips, and date fields above the note content](screenshots/frontmatter-bar.png)
 
-**Tags** are clickable — clicking one filters the file tree to show only notes with that tag.
-
----
-
-## Emoji
-
-Type `:` anywhere in the editor to trigger emoji autocomplete:
-
-- `:smile` → 😄
-- `:rocket` → 🚀
-- `:check` → ✅
+- **`type`** gets a color badge. Built-ins: `source` (blue), `concept` (purple), `entity` (green), `topic` (amber). Custom types configurable in **Settings → Types**.
+- **`tags`** are clickable chips — click to filter the file tree to that tag.
 
 ---
 
-## Filtering notes
+## 10. Emoji autocomplete
 
-The **Filter** bar at the top of the sidebar lets you narrow the file tree:
+Type `:` anywhere in editor to open emoji suggestions:
 
-- **Tags** — check one tag to show only files that have it
-- **Date range** — filter by the `created` frontmatter date (From/To)
-- Active filters are shown inline in the filter button
-- Click **×** to clear all filters
+```
+:smile  →  😄
+:rocket →  🚀
+:check  →  ✅
+```
 
 ---
 
-## Bookmarks
+## 11. Filtering notes
 
-- **Hover** any file in the sidebar → click the bookmark icon to pin it
+**Filter bar** at sidebar top:
+
+- **Tags** — click a tag to show only files with that tag
+- **Date range** — filter by `created` frontmatter date (From / To)
+- Active filters shown inline in filter button
+- **×** clears all filters
+
+Tags can also be filtered from **Settings → Tags** — click any tag chip there.
+
+![Sidebar showing filter panel open with a tag selected and date range inputs, file tree showing only matching files](screenshots/filter-panel.png)
+
+---
+
+## 12. Bookmarks
+
+- **Hover** file → click bookmark icon to pin
 - **Right-click** → Add/Remove bookmark
-- Bookmarks appear at the top of the sidebar above the file tree
+- Bookmarks appear at the top of the sidebar, above the file tree
+- Persisted across restarts
 
 ---
 
-## Templates
+## 13. Templates
 
-Templates live in a `_templates/` folder inside your notes folder. NoteBuddy creates two starter templates on first launch:
+Templates live in `_templates/` inside your notes folder. Two starters are created on first launch: `Meeting Notes.md` and `Daily Note.md`.
 
-- `Meeting Notes.md`
-- `Daily Note.md`
+**Using a template:**
+1. Right-click any folder in sidebar
+2. **From template** → pick template
+3. New file created with `{{date}}` → today's date
 
-To create a note from a template:
-1. Right-click any folder in the sidebar
-2. Choose **From template** → select a template
-3. A new file is created with `{{date}}` replaced by today's date
-
-To add your own templates, just create `.md` files in `_templates/`.
+**Adding templates:** drop any `.md` file into `_templates/`. Manage them in **Settings → Templates**.
 
 ---
 
-## Command palette (`⌘K`)
+## 14. Command palette (`⌘K`)
 
-The fastest way to navigate and act:
+Fastest way to navigate and act:
 
-| Type | Action |
+| Input | Action |
 |---|---|
 | Any text | Full-text search across all notes |
 | `> new` | New file |
 | `> save` | Save current file |
-| `> editor` / `> split` / `> preview` | Switch view |
+| `> editor` / `> split` / `> preview` | Switch view mode |
 | `> zen` | Toggle zen mode |
 | `> export html` | Export as HTML |
 | `> export pdf` | Open print preview |
 | `> settings` | Open settings |
 
----
-
-## Find & replace (`⌘F`)
-
-Opens inside the editor. Features:
-- Case sensitive toggle (`Aa`)
-- Regex toggle (`.*`)
-- Whole word toggle (`W`)
-- Match counter
-- Replace one / Replace all
-- `↓ ↑` or Enter / Shift+Enter to navigate matches
+![Command palette open over the editor, showing search results for a query with file matches and commands](screenshots/command-palette.png)
 
 ---
 
-## Zen mode (`⌘⇧Z`)
+## 15. Find & replace (`⌘F`)
 
-Hides the sidebar for distraction-free writing. The toolbar and tabs stay visible. Press `⌘⇧Z` or `Esc` to exit.
+Opens inside editor. Features:
+- **`Aa`** — case sensitive
+- **`.*`** — regex mode
+- **`W`** — whole word
+- Match counter (e.g. `3 / 12`)
+- Replace single / Replace all
+- `↓` `↑` or `Enter` / `Shift+Enter` to navigate matches
+- `Esc` closes
 
 ---
 
-## Export
+## 16. Zen mode (`⌘⇧Z`)
+
+Hides sidebar for distraction-free writing. Toolbar and tabs stay visible.
+
+Exit: `⌘⇧Z` or `Esc`.
+
+![Editor in zen mode with sidebar hidden, full-width writing area in dark theme](screenshots/zen-mode.png)
+
+---
+
+## 17. Export
 
 ### Print / Save as PDF (`⌘P`)
-Opens a print preview modal with clean typography. Click **Print / Save as PDF** and choose **Save as PDF** in the destination dropdown.
+
+Opens print preview modal with clean typography. In browser print dialog: set **Destination → Save as PDF**.
 
 ### Export as HTML
-`⌘K` → `> export html` → choose a save location. Generates a self-contained HTML file with embedded CSS.
+
+`⌘K` → `> export html` → choose save location. Generates a self-contained HTML file with embedded CSS, no external dependencies.
 
 ---
 
-## Settings (`⚙`)
+## 18. Settings
 
-### Appearance
-- **Color mode** — Dark / Light
-- **Editor theme** — VS Code Dark, One Dark, GitHub Light
-- **Code block theme** — GitHub Dark, GitHub Light, Atom One Dark, Monokai, Tokyo Night
-- **Custom themes** — add your own highlight.js CSS (see below)
-- **Font size** — 11–20px
-- **Window opacity** — 30–100%
-- **Vibrancy / blur** — macOS background blur
+Open with `⚙` toolbar button or `⌘K` → `> settings`.
 
-### Adding a custom code block theme
+### Appearance tab
 
-1. Open **Settings → Appearance**
-2. Scroll to **Custom themes** under the Code block theme selector
-3. Click **+ Add theme**
-4. Enter a name (e.g. "Dracula")
-5. Paste any [highlight.js-compatible theme CSS](https://highlightjs.org/examples) into the textarea
-6. Click **Add theme** — it immediately appears in the dropdown and is applied
+Controls the full UI palette, editor syntax theme, and code block theme. Full documentation in the **[Theming Guide](THEMING.md)**.
 
-Themes are persisted across sessions. Remove a custom theme by clicking **Remove** in the custom themes list.
+| Setting | Options |
+|---|---|
+| App theme | 7 built-ins + custom CSS palettes |
+| Editor theme | 13 built-ins + custom CSS |
+| Code block theme | 5 built-ins + custom CSS |
+| Font size | 11–20px |
+| Window opacity | 30–100% |
+| Text brightness | 100–200% |
+| Vibrancy / blur | macOS background blur (toggle + radius) |
 
-**Where to find themes:**
-- https://highlightjs.org/examples — official themes browser
-- https://github.com/highlightjs/highlight.js/tree/main/src/styles — raw CSS files
-- https://github.com/highlightjs/highlight.js/wiki/Theme-Gallery — community themes
+![Settings sheet open on the Appearance tab showing theme selectors, font size slider, and opacity controls](screenshots/settings-appearance.png)
 
-Any valid CSS that targets `.hljs` and its token classes works.
+### Editor tab
 
-### Editor
-- **Line numbers** — show/hide gutter
-- **Line wrapping** — soft-wrap long lines
-- **Auto-save** — save automatically after a delay (0.5s–5s)
+| Setting | Description |
+|---|---|
+| Line numbers | Show/hide gutter |
+| Line wrapping | Soft-wrap long lines |
+| Auto-save | Save after delay (0.5s–5s) |
 
-### Tags
-- Browse all tags found across your folder (with file counts)
-- Click a tag to filter the file tree
+### Types tab
 
-### About
-- App info + keyboard shortcuts reference
-- **Take the tour** — restart the guided tour anytime
+Map frontmatter `type:` values to badge colors. Add any custom type string and pick a color.
+
+### Templates tab
+
+Manage `_templates/` files without leaving the app.
+
+### Tags tab
+
+All tags found in your folder with file counts. Click any tag to filter the file tree.
+
+### About tab
+
+App version info, keyboard shortcuts reference, and:
+- **Take the tour** — restart the guided feature tour
+- **Reset onboarding** — clears setup state and reopens the welcome wizard
 
 ---
 
-## Keyboard shortcuts reference
+## 19. Keyboard shortcuts
 
 | Shortcut | Action |
 |---|---|

@@ -1,8 +1,9 @@
 {
-  "name": "md-editor",
+  "name": "note-buddy",
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "author": {"name": "Robin Denker"},
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

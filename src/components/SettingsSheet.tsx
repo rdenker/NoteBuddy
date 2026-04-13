@@ -6,6 +6,7 @@ import {
   Keyboard,
   LayoutTemplate,
   Palette,
+  RotateCcw,
   SlidersHorizontal,
   Sparkles,
   Tag,
@@ -599,6 +600,7 @@ export function SettingsSheet() {
     textBrightness,
     setTextBrightness,
     setTourActive,
+    resetOnboarding,
     customThemes,
     addCustomTheme,
     removeCustomTheme,
@@ -1041,6 +1043,26 @@ export function SettingsSheet() {
                         </div>
                       </div>
                       <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary ml-auto transition-colors" />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        resetOnboarding();
+                        setSettingsOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 rounded-xl border border-border hover:border-destructive/40 bg-muted/30 hover:bg-destructive/5 px-4 py-3.5 text-left transition-colors group"
+                    >
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
+                        <RotateCcw className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">
+                          Reset onboarding
+                        </div>
+                        <div className="text-[11px] text-muted-foreground mt-0.5">
+                          Clear setup state and reopen the welcome wizard
+                        </div>
+                      </div>
                     </button>
 
                     <div className="rounded-lg border border-border bg-muted/40 p-4 space-y-2.5">

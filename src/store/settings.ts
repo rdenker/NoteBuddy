@@ -78,6 +78,7 @@ interface SettingsState {
   setTextBrightness: (v: number) => void;
   setHasOnboarded: (v: boolean) => void;
   setTourActive: (v: boolean) => void;
+  resetOnboarding: () => void;
   setZenMode: (v: boolean) => void;
   setSidebarWidth: (v: number) => void;
   addCustomTheme: (theme: CustomTheme) => void;
@@ -153,6 +154,8 @@ export const useSettingsStore = create<SettingsState>()(
       setTextBrightness: (textBrightness) => set({ textBrightness }),
       setHasOnboarded: (hasOnboarded) => set({ hasOnboarded }),
       setTourActive: (tourActive) => set({ tourActive }),
+      resetOnboarding: () =>
+        set({ hasOnboarded: false, tourActive: false, lastFolder: null, lastFilePath: null }),
       setZenMode: (zenMode) => set({ zenMode }),
       setSidebarWidth: (sidebarWidth) => set({ sidebarWidth }),
       addCustomTheme: (theme) =>
