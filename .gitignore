@@ -1,0 +1,38 @@
+# Logs and generated files
+*.log
+*.local
+
+# Dependencies
+node_modules/
+.bun/
+
+# Build output
+dist/
+src-tauri/target/
+
+# Tauri generated schemas
+src-tauri/gen/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+.AppleDouble
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Temp
+/tmp/md-editor-print-*.html
+
+# IDE
+.vscode/settings.json
+.idea/
+*.swp
+
+# Test
+coverage/
