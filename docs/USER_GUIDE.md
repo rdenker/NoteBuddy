@@ -63,7 +63,7 @@ To restart onboarding at any time: **Settings → About → Reset onboarding**.
 └────────────────────────────────────────────────────────┘
 ```
 
-![Full app window in dark theme with a markdown note open, sidebar showing file tree, split editor/preview visible](screenshots/interface-overview.png)
+![Full app window in dark theme with a markdown note open, sidebar showing file tree, split editor/preview visible](screenshots/main-interface.png)
 
 - **Sidebar** — file tree, bookmarks, tag/date filter. Drag the right edge to resize.
 - **Editor** — CodeMirror 6. Full markdown syntax highlighting + autocomplete.
