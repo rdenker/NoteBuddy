@@ -21,7 +21,8 @@ src-tauri/gen/
 # macOS
 .DS_Store
 .AppleDouble
-Icon?
+# macOS custom icon file (Icon + carriage return) — NOT the src-tauri/icons/ directory
+[Ii]con$'\r'
 ._*
 .Spotlight-V100
 .Trashes

@@ -28,12 +28,18 @@ pub struct AppState {
     pub watchers: Mutex<HashMap<String, RecommendedWatcher>>,
 }
 
-impl AppState {
-    pub fn new() -> Self {
+impl Default for AppState {
+    fn default() -> Self {
         AppState {
             recent_files: Mutex::new(Vec::new()),
             watchers: Mutex::new(HashMap::new()),
         }
+    }
+}
+
+impl AppState {
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 
@@ -330,14 +336,14 @@ mod commands {
             let mut created: Option<String> = None;
             for line in yaml.lines() {
                 let line = line.trim();
-                if line.starts_with("created:") {
-                    let val = line[8..].trim().trim_matches('"').trim_matches('\'');
+                if let Some(stripped) = line.strip_prefix("created:") {
+                    let val = stripped.trim().trim_matches('"').trim_matches('\'');
                     if !val.is_empty() {
                         created = Some(val.to_string());
                     }
                 }
-                if line.starts_with("tags:") {
-                    let inline = line[5..].trim();
+                if let Some(stripped) = line.strip_prefix("tags:") {
+                    let inline = stripped.trim();
                     if inline.starts_with('[') {
                         tags = inline
                             .trim_matches(|c| c == '[' || c == ']')
