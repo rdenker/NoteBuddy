@@ -28,12 +28,18 @@ pub struct AppState {
     pub watchers: Mutex<HashMap<String, RecommendedWatcher>>,
 }
 
-impl AppState {
-    pub fn new() -> Self {
+impl Default for AppState {
+    fn default() -> Self {
         AppState {
             recent_files: Mutex::new(Vec::new()),
             watchers: Mutex::new(HashMap::new()),
         }
+    }
+}
+
+impl AppState {
+    pub fn new() -> Self {
+        Self::default()
     }
 }
 
@@ -122,11 +128,7 @@ mod commands {
     }
 
     #[tauri::command]
-    pub fn watch_file(
-        path: String,
-        app: AppHandle,
-        state: State<AppState>,
-    ) -> Result<(), String> {
+    pub fn watch_file(path: String, app: AppHandle, state: State<AppState>) -> Result<(), String> {
         let app_clone = app.clone();
 
         let mut watcher = RecommendedWatcher::new(
@@ -186,10 +188,7 @@ mod commands {
     }
 
     #[tauri::command]
-    pub async fn save_file_dialog(
-        app: AppHandle,
-        _current_path: Option<String>,
-    ) -> Option<String> {
+    pub async fn save_file_dialog(app: AppHandle, _current_path: Option<String>) -> Option<String> {
         use tauri_plugin_dialog::DialogExt;
 
         app.dialog()
@@ -205,7 +204,9 @@ mod commands {
         app.run_on_main_thread(move || {
             #[cfg(target_os = "macos")]
             {
-                use window_vibrancy::{apply_vibrancy, clear_vibrancy, NSVisualEffectMaterial, NSVisualEffectState};
+                use window_vibrancy::{
+                    apply_vibrancy, clear_vibrancy, NSVisualEffectMaterial, NSVisualEffectState,
+                };
                 if let Some(window) = app2.get_webview_window("main") {
                     if blur {
                         let _ = apply_vibrancy(
@@ -219,7 +220,8 @@ mod commands {
                     }
                 }
             }
-        }).map_err(|e| e.to_string())
+        })
+        .map_err(|e| e.to_string())
     }
 
     #[tauri::command]
@@ -271,11 +273,15 @@ mod commands {
         let mut results = Vec::new();
 
         fn walk(dir: &Path, query: &str, results: &mut Vec<SearchResult>) {
-            let Ok(entries) = fs::read_dir(dir) else { return };
+            let Ok(entries) = fs::read_dir(dir) else {
+                return;
+            };
             for entry in entries.flatten() {
                 let path = entry.path();
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name.starts_with('.') { continue; }
+                if name.starts_with('.') {
+                    continue;
+                }
                 if path.is_dir() {
                     walk(&path, query, results);
                 } else if name.ends_with(".md") || name.ends_with(".markdown") {
@@ -288,7 +294,9 @@ mod commands {
                                     line: i + 1,
                                     preview: line.trim().chars().take(120).collect(),
                                 });
-                                if results.len() >= 200 { return; }
+                                if results.len() >= 200 {
+                                    return;
+                                }
                             }
                         }
                     }
@@ -314,7 +322,9 @@ mod commands {
 
         fn extract_tags(content: &str) -> (Vec<String>, Option<String>) {
             let content = content.trim_start();
-            if !content.starts_with("---") { return (vec![], None); }
+            if !content.starts_with("---") {
+                return (vec![], None);
+            }
             let rest = &content[3..];
             let end = match rest.find("\n---") {
                 Some(i) => i,
@@ -326,14 +336,17 @@ mod commands {
             let mut created: Option<String> = None;
             for line in yaml.lines() {
                 let line = line.trim();
-                if line.starts_with("created:") {
-                    let val = line[8..].trim().trim_matches('"').trim_matches('\'');
-                    if !val.is_empty() { created = Some(val.to_string()); }
+                if let Some(stripped) = line.strip_prefix("created:") {
+                    let val = stripped.trim().trim_matches('"').trim_matches('\'');
+                    if !val.is_empty() {
+                        created = Some(val.to_string());
+                    }
                 }
-                if line.starts_with("tags:") {
-                    let inline = line[5..].trim();
+                if let Some(stripped) = line.strip_prefix("tags:") {
+                    let inline = stripped.trim();
                     if inline.starts_with('[') {
-                        tags = inline.trim_matches(|c| c == '[' || c == ']')
+                        tags = inline
+                            .trim_matches(|c| c == '[' || c == ']')
                             .split(',')
                             .map(|s| s.trim().trim_matches('"').trim_matches('\'').to_string())
                             .filter(|s| !s.is_empty())
@@ -343,7 +356,13 @@ mod commands {
                         in_tags = true;
                     }
                 } else if in_tags && line.starts_with("- ") {
-                    tags.push(line[2..].trim().trim_matches('"').trim_matches('\'').to_string());
+                    tags.push(
+                        line[2..]
+                            .trim()
+                            .trim_matches('"')
+                            .trim_matches('\'')
+                            .to_string(),
+                    );
                 } else if in_tags && !line.starts_with('-') {
                     in_tags = false;
                 }
@@ -352,11 +371,15 @@ mod commands {
         }
 
         fn walk(dir: &Path, results: &mut Vec<FileTags>) {
-            let Ok(entries) = fs::read_dir(dir) else { return };
+            let Ok(entries) = fs::read_dir(dir) else {
+                return;
+            };
             for entry in entries.flatten() {
                 let path = entry.path();
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name.starts_with('.') { continue; }
+                if name.starts_with('.') {
+                    continue;
+                }
                 if path.is_dir() {
                     walk(&path, results);
                 } else if name.ends_with(".md") || name.ends_with(".markdown") {
@@ -389,18 +412,25 @@ mod commands {
     #[tauri::command]
     pub fn list_templates(root: String) -> Vec<Template> {
         let dir = Path::new(&root).join("_templates");
-        let Ok(entries) = fs::read_dir(&dir) else { return vec![] };
-        entries.flatten().filter_map(|entry| {
-            let path = entry.path();
-            let name = entry.file_name().to_string_lossy().to_string();
-            if !name.ends_with(".md") { return None; }
-            let content = fs::read_to_string(&path).unwrap_or_default();
-            Some(Template {
-                path: path.to_string_lossy().to_string(),
-                name: name.trim_end_matches(".md").to_string(),
-                content,
+        let Ok(entries) = fs::read_dir(&dir) else {
+            return vec![];
+        };
+        entries
+            .flatten()
+            .filter_map(|entry| {
+                let path = entry.path();
+                let name = entry.file_name().to_string_lossy().to_string();
+                if !name.ends_with(".md") {
+                    return None;
+                }
+                let content = fs::read_to_string(&path).unwrap_or_default();
+                Some(Template {
+                    path: path.to_string_lossy().to_string(),
+                    name: name.trim_end_matches(".md").to_string(),
+                    content,
+                })
             })
-        }).collect()
+            .collect()
     }
 
     #[tauri::command]
@@ -420,8 +450,14 @@ mod commands {
     pub fn save_as_template(root: String, name: String, content: String) -> Result<String, String> {
         let dir = Path::new(&root).join("_templates");
         fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-        let safe_name = name.trim().replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "_");
-        let file_name = if safe_name.ends_with(".md") { safe_name } else { format!("{}.md", safe_name) };
+        let safe_name = name
+            .trim()
+            .replace(['/', '\\', ':', '*', '?', '"', '<', '>', '|'], "_");
+        let file_name = if safe_name.ends_with(".md") {
+            safe_name
+        } else {
+            format!("{}.md", safe_name)
+        };
         let path = dir.join(&file_name);
         fs::write(&path, &content).map_err(|e| e.to_string())?;
         Ok(path.to_string_lossy().to_string())
@@ -434,7 +470,10 @@ mod commands {
 
     #[tauri::command]
     pub fn write_temp_html(html: String) -> Result<String, String> {
-        let tmp = std::env::temp_dir().join(format!("md-editor-print-{}.html", chrono::Utc::now().timestamp_millis()));
+        let tmp = std::env::temp_dir().join(format!(
+            "md-editor-print-{}.html",
+            chrono::Utc::now().timestamp_millis()
+        ));
         fs::write(&tmp, html).map_err(|e| e.to_string())?;
         Ok(tmp.to_string_lossy().to_string())
     }
@@ -450,7 +489,8 @@ mod commands {
         let mut body = String::new();
         html::push_html(&mut body, parser);
 
-        format!(r#"<!DOCTYPE html>
+        format!(
+            r#"<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -469,7 +509,8 @@ mod commands {
 <body>
 {body}
 </body>
-</html>"#)
+</html>"#
+        )
     }
 }
 
@@ -548,7 +589,7 @@ mod tests {
     }
 
     mod file_ops_tests {
-        use super::super::commands::{write_file, list_directory};
+        use super::super::commands::{list_directory, write_file};
         use super::*;
 
         #[test]
@@ -563,7 +604,11 @@ mod tests {
         #[test]
         fn write_creates_parent_dirs() {
             let dir = tempdir();
-            let path = dir.path().join("a/b/c/test.md").to_string_lossy().to_string();
+            let path = dir
+                .path()
+                .join("a/b/c/test.md")
+                .to_string_lossy()
+                .to_string();
             write_file(path.clone(), "nested".to_string()).unwrap();
             assert!(fs::read_to_string(&path).is_ok());
         }
@@ -621,7 +666,10 @@ mod tests {
         fn finds_matching_line() {
             let dir = tempdir();
             fs::write(dir.path().join("note.md"), "hello world\nfoo bar\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "hello".to_string());
+            let results = search_files(
+                dir.path().to_string_lossy().to_string(),
+                "hello".to_string(),
+            );
             assert_eq!(results.len(), 1);
             assert_eq!(results[0].line, 1);
         }
@@ -630,7 +678,10 @@ mod tests {
         fn search_case_insensitive() {
             let dir = tempdir();
             fs::write(dir.path().join("note.md"), "Hello World\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "hello".to_string());
+            let results = search_files(
+                dir.path().to_string_lossy().to_string(),
+                "hello".to_string(),
+            );
             assert_eq!(results.len(), 1);
         }
 
@@ -638,7 +689,10 @@ mod tests {
         fn no_match_returns_empty() {
             let dir = tempdir();
             fs::write(dir.path().join("note.md"), "nothing here\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "xyz123".to_string());
+            let results = search_files(
+                dir.path().to_string_lossy().to_string(),
+                "xyz123".to_string(),
+            );
             assert!(results.is_empty());
         }
 
@@ -646,7 +700,10 @@ mod tests {
         fn skips_non_markdown() {
             let dir = tempdir();
             fs::write(dir.path().join("file.txt"), "searchterm\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "searchterm".to_string());
+            let results = search_files(
+                dir.path().to_string_lossy().to_string(),
+                "searchterm".to_string(),
+            );
             assert!(results.is_empty());
         }
 
@@ -656,7 +713,8 @@ mod tests {
             let sub = dir.path().join("sub");
             fs::create_dir(&sub).unwrap();
             fs::write(sub.join("deep.md"), "deep content\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "deep".to_string());
+            let results =
+                search_files(dir.path().to_string_lossy().to_string(), "deep".to_string());
             assert_eq!(results.len(), 1);
         }
 
@@ -666,7 +724,10 @@ mod tests {
             let hidden = dir.path().join(".hidden");
             fs::create_dir(&hidden).unwrap();
             fs::write(hidden.join("note.md"), "secret\n").unwrap();
-            let results = search_files(dir.path().to_string_lossy().to_string(), "secret".to_string());
+            let results = search_files(
+                dir.path().to_string_lossy().to_string(),
+                "secret".to_string(),
+            );
             assert!(results.is_empty());
         }
     }
@@ -678,8 +739,11 @@ mod tests {
         #[test]
         fn extracts_inline_tags() {
             let dir = tempdir();
-            fs::write(dir.path().join("note.md"),
-                "---\ntitle: Test\ntags: [rust, programming]\ncreated: 2024-01-01\n---\n\nbody").unwrap();
+            fs::write(
+                dir.path().join("note.md"),
+                "---\ntitle: Test\ntags: [rust, programming]\ncreated: 2024-01-01\n---\n\nbody",
+            )
+            .unwrap();
             let results = scan_tags(dir.path().to_string_lossy().to_string());
             assert_eq!(results.len(), 1);
             assert!(results[0].tags.contains(&"rust".to_string()));
@@ -689,8 +753,11 @@ mod tests {
         #[test]
         fn extracts_block_tags() {
             let dir = tempdir();
-            fs::write(dir.path().join("note.md"),
-                "---\ntags:\n  - alpha\n  - beta\n---\n\nbody").unwrap();
+            fs::write(
+                dir.path().join("note.md"),
+                "---\ntags:\n  - alpha\n  - beta\n---\n\nbody",
+            )
+            .unwrap();
             let results = scan_tags(dir.path().to_string_lossy().to_string());
             assert_eq!(results.len(), 1);
             assert!(results[0].tags.contains(&"alpha".to_string()));
@@ -699,8 +766,11 @@ mod tests {
         #[test]
         fn extracts_created_date() {
             let dir = tempdir();
-            fs::write(dir.path().join("note.md"),
-                "---\ntags: [test]\ncreated: 2024-06-15\n---\n\nbody").unwrap();
+            fs::write(
+                dir.path().join("note.md"),
+                "---\ntags: [test]\ncreated: 2024-06-15\n---\n\nbody",
+            )
+            .unwrap();
             let results = scan_tags(dir.path().to_string_lossy().to_string());
             assert_eq!(results[0].created, Some("2024-06-15".to_string()));
         }
@@ -716,8 +786,11 @@ mod tests {
         #[test]
         fn skips_frontmatter_without_tags() {
             let dir = tempdir();
-            fs::write(dir.path().join("note.md"),
-                "---\ntitle: No tags here\n---\n\nbody").unwrap();
+            fs::write(
+                dir.path().join("note.md"),
+                "---\ntitle: No tags here\n---\n\nbody",
+            )
+            .unwrap();
             let results = scan_tags(dir.path().to_string_lossy().to_string());
             assert!(results.is_empty());
         }
@@ -749,14 +822,21 @@ mod tests {
     }
 
     mod template_tests {
-        use super::super::commands::{save_as_template, list_templates, ensure_templates_dir, delete_template};
+        use super::super::commands::{
+            delete_template, ensure_templates_dir, list_templates, save_as_template,
+        };
         use super::*;
 
         #[test]
         fn save_and_list_template() {
             let dir = tempdir();
             let root = dir.path().to_string_lossy().to_string();
-            save_as_template(root.clone(), "My Template".to_string(), "# Content".to_string()).unwrap();
+            save_as_template(
+                root.clone(),
+                "My Template".to_string(),
+                "# Content".to_string(),
+            )
+            .unwrap();
             let templates = list_templates(root);
             assert_eq!(templates.len(), 1);
             assert_eq!(templates[0].name, "My Template");
@@ -767,7 +847,12 @@ mod tests {
         fn save_template_sanitizes_name() {
             let dir = tempdir();
             let root = dir.path().to_string_lossy().to_string();
-            save_as_template(root.clone(), "bad/name:test".to_string(), "content".to_string()).unwrap();
+            save_as_template(
+                root.clone(),
+                "bad/name:test".to_string(),
+                "content".to_string(),
+            )
+            .unwrap();
             let templates = list_templates(root);
             assert_eq!(templates.len(), 1);
             assert!(!templates[0].name.contains('/'));
@@ -787,7 +872,8 @@ mod tests {
         fn delete_template_removes_file() {
             let dir = tempdir();
             let root = dir.path().to_string_lossy().to_string();
-            let path = save_as_template(root.clone(), "ToDelete".to_string(), "x".to_string()).unwrap();
+            let path =
+                save_as_template(root.clone(), "ToDelete".to_string(), "x".to_string()).unwrap();
             delete_template(path.clone()).unwrap();
             assert!(!std::path::Path::new(&path).exists());
         }
@@ -802,7 +888,7 @@ mod tests {
     }
 
     mod path_ops_tests {
-        use super::super::commands::{create_file, create_directory, rename_path, delete_path};
+        use super::super::commands::{create_directory, create_file, delete_path, rename_path};
         use super::*;
 
         #[test]
@@ -887,9 +973,7 @@ pub fn run() {
             commands::export_html,
             commands::write_temp_html,
         ])
-        .setup(|_app| {
-            Ok(())
-        })
+        .setup(|_app| Ok(()))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
