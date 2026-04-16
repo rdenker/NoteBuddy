@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { StatusBar } from "@/components/StatusBar";
 import { useEditorStore } from "@/store/editor";
+import { useSettingsStore } from "@/store/settings";
 
 describe("StatusBar", () => {
   beforeEach(() => {
@@ -9,7 +10,9 @@ describe("StatusBar", () => {
       content: "",
       currentFilePath: null,
       isDirty: false,
+      vimModeLabel: null,
     });
+    useSettingsStore.setState({ vimMode: false });
   });
 
   it("renders without crashing", () => {
@@ -48,5 +51,12 @@ describe("StatusBar", () => {
     useEditorStore.setState({ content: "word ".repeat(200) });
     render(<StatusBar />);
     expect(screen.getByText(/min read/)).toBeInTheDocument();
+  });
+
+  it("shows vim mode badge when vim enabled", () => {
+    useSettingsStore.setState({ vimMode: true });
+    useEditorStore.setState({ vimModeLabel: "INSERT" });
+    render(<StatusBar />);
+    expect(screen.getByText("INSERT")).toBeInTheDocument();
   });
 });

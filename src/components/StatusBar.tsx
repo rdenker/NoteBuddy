@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
+import { Badge } from "@/components/ui/badge";
 import { spring } from "@/lib/motion";
 import { useEditorStore } from "@/store/editor";
+import { useSettingsStore } from "@/store/settings";
 
 function countWords(text: string): number {
   return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
@@ -16,6 +18,8 @@ export function StatusBar() {
   const content = useEditorStore((s) => s.content);
   const currentFilePath = useEditorStore((s) => s.currentFilePath);
   const isDirty = useEditorStore((s) => s.isDirty);
+  const vimModeLabel = useEditorStore((s) => s.vimModeLabel);
+  const vimMode = useSettingsStore((s) => s.vimMode);
 
   const stats = useMemo(() => {
     const words = countWords(content);
@@ -36,6 +40,14 @@ export function StatusBar() {
             {currentFilePath}
             {isDirty && " •"}
           </span>
+        )}
+        {vimMode && vimModeLabel && (
+          <Badge
+            variant="outline"
+            className="h-4 px-1.5 rounded text-[9px] tracking-[0.18em] text-primary border-primary/30 bg-primary/10"
+          >
+            {vimModeLabel}
+          </Badge>
         )}
       </div>
       <div className="flex items-center gap-3">

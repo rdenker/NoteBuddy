@@ -4,6 +4,7 @@ import { languages } from "@codemirror/language-data";
 import { openSearchPanel, search, searchKeymap } from "@codemirror/search";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView, keymap } from "@codemirror/view";
+import { getCM, vim } from "@replit/codemirror-vim";
 import { aura } from "@uiw/codemirror-theme-aura";
 import { dracula } from "@uiw/codemirror-theme-dracula";
 import { githubLight } from "@uiw/codemirror-theme-github";
@@ -33,6 +34,16 @@ interface EditorPaneProps {
 export function openFindReplace() {
   const view = editorView.current;
   if (view) openSearchPanel(view);
+}
+
+function formatVimModeLabel(event: { mode: string; subMode?: string }) {
+  if (event.mode === "visual") {
+    if (event.subMode === "linewise") return "VISUAL LINE";
+    if (event.subMode === "blockwise") return "VISUAL BLOCK";
+    return "VISUAL";
+  }
+
+  return event.mode.toUpperCase();
 }
 
 function markdownCompletions(context: CompletionContext) {
@@ -131,6 +142,7 @@ export function EditorPane({ onChange }: EditorPaneProps) {
     fontSize,
     lineNumbers,
     lineWrapping,
+    vimMode,
     customEditorThemes,
     customEditorThemeId,
   } = useSettingsStore();
@@ -149,6 +161,34 @@ export function EditorPane({ onChange }: EditorPaneProps) {
     };
   }, []);
 
+  useEffect(() => {
+    const view = cmRef.current?.view;
+    const setVimModeLabel = useEditorStore.getState().setVimModeLabel;
+
+    if (!view || !vimMode) {
+      setVimModeLabel(null);
+      return;
+    }
+
+    const cm = getCM(view);
+    if (!cm) {
+      setVimModeLabel(null);
+      return;
+    }
+
+    const handleModeChange = (event: { mode: string; subMode?: string }) => {
+      setVimModeLabel(formatVimModeLabel(event));
+    };
+
+    cm.on("vim-mode-change", handleModeChange);
+    setVimModeLabel("NORMAL");
+
+    return () => {
+      cm.off("vim-mode-change", handleModeChange);
+      setVimModeLabel(null);
+    };
+  }, [vimMode]);
+
   const extensions = useMemo(
     () => [
       markdown({ base: markdownLanguage, codeLanguages: languages, addKeymap: true }),
@@ -159,6 +199,7 @@ export function EditorPane({ onChange }: EditorPaneProps) {
         activateOnTyping: true,
         icons: true,
       }),
+      ...(vimMode ? [vim()] : []),
       ...(lineWrapping ? [EditorView.lineWrapping] : []),
       EditorView.domEventHandlers({
         paste: (e) => {
@@ -230,7 +271,7 @@ export function EditorPane({ onChange }: EditorPaneProps) {
         ".cm-completionLabel": { fontFamily: "ui-sans-serif, system-ui, sans-serif" },
       }),
     ],
-    [fontSize, lineWrapping, rootDir]
+    [fontSize, lineWrapping, rootDir, vimMode]
   );
 
   return (

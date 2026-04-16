@@ -2,8 +2,11 @@
   "name": "note-buddy",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "bun@1.3.11",
   "type": "module",
-  "author": {"name": "Robin Denker"},
+  "author": {
+    "name": "Robin Denker"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -44,6 +47,7 @@
     "@codemirror/language-data": "^6.5.2",
     "@codemirror/search": "^6.6.0",
     "@codemirror/state": "^6.6.0",
+    "@replit/codemirror-vim": "^6.0.7",
     "@codemirror/view": "^6.41.0",
     "@emoji-mart/data": "^1.2.1",
     "@radix-ui/react-dialog": "^1.1.15",

@@ -13,6 +13,7 @@ interface EditorState {
   rootDir: string | null;
   fileTree: FileEntry[];
   activePanel: "editor" | "split" | "preview";
+  vimModeLabel: string | null;
   frontmatter: Frontmatter | null;
   activeTagFilter: string | null;
   activeDateFrom: string | null;
@@ -26,6 +27,7 @@ interface EditorState {
   setRootDir: (dir: string) => void;
   setFileTree: (tree: FileEntry[]) => void;
   setActivePanel: (panel: "editor" | "split" | "preview") => void;
+  setVimModeLabel: (mode: string | null) => void;
   setFrontmatter: (fm: Frontmatter | null) => void;
   setActiveTagFilter: (tag: string | null) => void;
   setActiveDateFrom: (date: string | null) => void;
@@ -44,6 +46,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   rootDir: null,
   fileTree: [],
   activePanel: "split",
+  vimModeLabel: null,
   frontmatter: null,
   activeTagFilter: null,
   activeDateFrom: null,
@@ -65,6 +68,8 @@ export const useEditorStore = create<EditorState>((set) => ({
 
   setActivePanel: (panel) => set({ activePanel: panel }),
 
+  setVimModeLabel: (vimModeLabel) => set({ vimModeLabel }),
+
   setFrontmatter: (fm) => set({ frontmatter: fm }),
 
   setActiveTagFilter: (tag) => set({ activeTagFilter: tag }),
@@ -79,6 +84,7 @@ export const useEditorStore = create<EditorState>((set) => ({
       savedContent: "",
       isDirty: false,
       previewHtml: "",
+      vimModeLabel: null,
       frontmatter: null,
     }),
 }));
