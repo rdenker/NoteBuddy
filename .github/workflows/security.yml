@@ -6,17 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  npm-audit:
-    name: npm audit
+  bun-audit:
+    name: bun audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm audit --audit-level=moderate
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun audit
 
   cargo-audit:
     name: cargo audit

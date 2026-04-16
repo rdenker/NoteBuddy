@@ -17,24 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+      - uses: oven-sh/setup-bun@v2
 
-      - run: npm ci
+      - run: bun install --frozen-lockfile
 
       - name: Typecheck
         run: npx tsc --noEmit
 
       - name: Lint
-        run: npm run lint
+        run: bun run lint
 
       - name: Test
-        run: npm test -- --reporter=verbose
+        run: bun run test -- --reporter=verbose
 
       - name: Test coverage
-        run: npm run test:coverage
+        run: bun run test:coverage
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -75,15 +72,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
+      - uses: oven-sh/setup-bun@v2
 
-      - run: npm ci
+      - run: bun install --frozen-lockfile
 
-      - name: npm audit
-        run: npm audit --audit-level=high
+      - name: bun audit
+        run: bun audit
 
       - uses: dtolnay/rust-toolchain@stable
 
