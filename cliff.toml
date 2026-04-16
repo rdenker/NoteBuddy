@@ -35,7 +35,7 @@ commit_parsers = [
 ]
 protect_breaking_commits = false
 filter_commits = true
-tag_pattern = "v[0-9].*"
+tag_pattern = "v[0-9].*|rc-.*"
 skip_tags = ""
 ignore_tags = "alpha|beta|rc"
 sort_commits = "newest"

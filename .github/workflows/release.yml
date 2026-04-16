@@ -71,12 +71,11 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          draft: false
+          draft: true
           generate_release_notes: false
           body_path: RELEASE_NOTES.md
           files: |
             artifacts/**/*.dmg
-            artifacts/**/*.app.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -105,7 +104,7 @@ jobs:
         uses: orhun/git-cliff-action@v4
         with:
           config: cliff.toml
-          args: --latest --strip header
+          args: --unreleased --strip header
         env:
           OUTPUT: RELEASE_NOTES.md
 
@@ -115,11 +114,10 @@ jobs:
           tag_name: ${{ steps.rc_tag.outputs.tag }}
           name: "Release Candidate ${{ steps.rc_tag.outputs.tag }}"
           prerelease: true
-          draft: false
+          draft: true
           generate_release_notes: false
           body_path: RELEASE_NOTES.md
           files: |
             artifacts/**/*.dmg
-            artifacts/**/*.app.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
