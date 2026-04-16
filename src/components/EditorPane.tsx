@@ -18,14 +18,15 @@ import { tokyoNight } from "@uiw/codemirror-theme-tokyo-night";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import CodeMirror, { type ReactCodeMirrorRef } from "@uiw/react-codemirror";
 import { useEffect, useMemo, useRef } from "react";
+import { EditorToolbar } from "@/components/EditorToolbar";
 import { codeBlockCompletion } from "@/lib/codeBlockCompletion";
+import { editorView } from "@/lib/editorRef";
 import { emojiCompletion } from "@/lib/emojiCompletion";
 import { handleImageDrop, handleImagePaste } from "@/lib/imagePaste";
-import { editorView } from "@/lib/editorRef";
 import { CustomSearchPanel } from "@/lib/searchPanel";
+import { slashCommandCompletion } from "@/lib/slashCommands";
 import { useEditorStore } from "@/store/editor";
 import { useSettingsStore } from "@/store/settings";
-import { EditorToolbar } from "@/components/EditorToolbar";
 
 interface EditorPaneProps {
   onChange: (value: string) => void;
@@ -195,7 +196,12 @@ export function EditorPane({ onChange }: EditorPaneProps) {
       search({ createPanel: (view) => new CustomSearchPanel(view) }),
       keymap.of(searchKeymap),
       autocompletion({
-        override: [emojiCompletion, codeBlockCompletion, markdownCompletions],
+        override: [
+          slashCommandCompletion,
+          emojiCompletion,
+          codeBlockCompletion,
+          markdownCompletions,
+        ],
         activateOnTyping: true,
         icons: true,
       }),
