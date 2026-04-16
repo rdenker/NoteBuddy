@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import path from "path";
+import path from "node:path";
 
 export default defineConfig({
   test: {
@@ -10,7 +10,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
-      include: ["src/lib/**", "src/store/**"],
+      include: ["src/lib/**", "src/store/**", "src/components/**"],
       exclude: ["src/lib/welcomeContent.ts"],
     },
   },

@@ -14,6 +14,7 @@ describe("editor store", () => {
       rootDir: null,
       fileTree: [],
       activePanel: "split",
+      vimModeLabel: null,
       frontmatter: null,
       activeTagFilter: null,
       activeDateFrom: null,
@@ -52,6 +53,11 @@ describe("editor store", () => {
   it("setActivePanel updates panel", () => {
     useEditorStore.getState().setActivePanel("editor");
     expect(useEditorStore.getState().activePanel).toBe("editor");
+  });
+
+  it("setVimModeLabel stores mode", () => {
+    useEditorStore.getState().setVimModeLabel("INSERT");
+    expect(useEditorStore.getState().vimModeLabel).toBe("INSERT");
   });
 
   it("setActiveTagFilter stores tag", () => {

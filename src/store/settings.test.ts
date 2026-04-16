@@ -10,6 +10,7 @@ beforeEach(() => {
     fontSize: 14,
     lineNumbers: true,
     lineWrapping: true,
+    vimMode: false,
     autoSave: false,
     autoSaveDelay: 1000,
     settingsOpen: false,
@@ -70,6 +71,11 @@ describe("settings store", () => {
     const s = useSettingsStore.getState();
     expect(s.autoSave).toBe(true);
     expect(s.autoSaveDelay).toBe(2000);
+  });
+
+  it("setVimMode toggles", () => {
+    useSettingsStore.getState().setVimMode(true);
+    expect(useSettingsStore.getState().vimMode).toBe(true);
   });
 
   it("setZenMode toggles", () => {

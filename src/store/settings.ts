@@ -40,6 +40,7 @@ interface SettingsState {
   fontSize: number;
   lineNumbers: boolean;
   lineWrapping: boolean;
+  vimMode: boolean;
   autoSave: boolean;
   autoSaveDelay: number;
   settingsOpen: boolean;
@@ -67,6 +68,7 @@ interface SettingsState {
   setFontSize: (size: number) => void;
   setLineNumbers: (v: boolean) => void;
   setLineWrapping: (v: boolean) => void;
+  setVimMode: (v: boolean) => void;
   setAutoSave: (v: boolean) => void;
   setAutoSaveDelay: (ms: number) => void;
   setSettingsOpen: (v: boolean) => void;
@@ -100,6 +102,7 @@ export const useSettingsStore = create<SettingsState>()(
       fontSize: 14,
       lineNumbers: true,
       lineWrapping: true,
+      vimMode: false,
       autoSave: false,
       autoSaveDelay: 1000,
       settingsOpen: false,
@@ -143,6 +146,7 @@ export const useSettingsStore = create<SettingsState>()(
       setFontSize: (fontSize) => set({ fontSize }),
       setLineNumbers: (lineNumbers) => set({ lineNumbers }),
       setLineWrapping: (lineWrapping) => set({ lineWrapping }),
+      setVimMode: (vimMode) => set({ vimMode }),
       setAutoSave: (autoSave) => set({ autoSave }),
       setAutoSaveDelay: (autoSaveDelay) => set({ autoSaveDelay }),
       setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
@@ -182,6 +186,7 @@ export const useSettingsStore = create<SettingsState>()(
         fontSize: state.fontSize,
         lineNumbers: state.lineNumbers,
         lineWrapping: state.lineWrapping,
+        vimMode: state.vimMode,
         autoSave: state.autoSave,
         autoSaveDelay: state.autoSaveDelay,
         lastFolder: state.lastFolder,

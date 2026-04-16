@@ -587,6 +587,8 @@ export function SettingsSheet() {
     setLineNumbers,
     lineWrapping,
     setLineWrapping,
+    vimMode,
+    setVimMode,
     autoSave,
     setAutoSave,
     autoSaveDelay,
@@ -942,6 +944,12 @@ export function SettingsSheet() {
                       description="Wrap long lines instead of scrolling"
                     >
                       <Switch checked={lineWrapping} onCheckedChange={setLineWrapping} />
+                    </SettingRow>
+                    <SettingRow
+                      label="Vim keybindings"
+                      description="Enable modal editing with normal, insert, and visual modes"
+                    >
+                      <Switch checked={vimMode} onCheckedChange={setVimMode} />
                     </SettingRow>
                     <SettingRow label="Auto-save" description="Automatically save after a delay">
                       <Switch checked={autoSave} onCheckedChange={setAutoSave} />

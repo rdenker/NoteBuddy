@@ -130,7 +130,7 @@ CI runs on every push and PR to `main` / `develop`:
 |---|---|
 | Frontend | typecheck · lint · test · coverage |
 | Rust | rustfmt · clippy · cargo test |
-| Audit | npm audit · cargo audit |
+| Audit | bun audit · cargo audit |
 
 PRs must pass all jobs before merge.
 
